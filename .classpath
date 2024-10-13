@@ -14,5 +14,10 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/Admin/Downloads/jar_files/mysql-connector-java-8.0.29-tidb-1.0.2.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Admin/Downloads/jar_files/protobuf-java-3.19.4.jar"/>
+	<classpathentry kind="lib" path="D:/open-cv/opencv/build/java/opencv-4100.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="D:/open-cv/opencv/build/java/x64"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

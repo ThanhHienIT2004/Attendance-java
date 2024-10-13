@@ -25,7 +25,7 @@ public class FaceDetect {
     private int faceCount = 1;
 
     // Đổi tên hàm khởi tạo cho khớp với tên lớp
-    public FaceDetect() {z
+    public FaceDetect() {
         // Nạp thư viện OpenCV
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
