@@ -1,1 +1,32 @@
-/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+.label {
+    font-size: 16px;
+    font-weight: bold;
+    text-fill: #333333;
+}
+
+.button {
+    font-size: 14px;
+    background-color: lightblue;
+    text-fill: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: hand;
+}
+
+.vbox {
+    -fx-alignment: center;
+}
+
+.top-box {
+    -fx-background-color: lightblue;
+    -fx-padding: 10;
+    -fx-min-height: 100px;
+    -fx-pref-height: 150px;
+    -fx-pref-width: 100%;
+}
+
+.left-box {
+    -fx-background-color: lightcoral;
+    -fx-padding: 10;
+}
