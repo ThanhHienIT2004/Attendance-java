@@ -64,6 +64,9 @@ public class FaceDetect {
 
         String studentDir = datasetDir + "/" + student.getId() + "_" + student.getName(); // Define studentDir here
 
+        // Khung giới hạn khuôn mặt
+        Rect allowedArea = new Rect(200, 200, 250, 250); // Tạo khung hình có kích thước và vị trí xác định
+
         try {
             while (true) {
                 if (camera.read(frame)) {
@@ -76,32 +79,40 @@ public class FaceDetect {
                     MatOfRect facesArray = new MatOfRect();
                     faceDetector.detectMultiScale(grayFrame, facesArray);
 
+                    // Vẽ khung giới hạn trên cửa sổ
+                    Imgproc.rectangle(frame, allowedArea.tl(), allowedArea.br(), new Scalar(255, 0, 0), 2);
+
                     Rect[] faces = facesArray.toArray();
                     for (Rect face : faces) {
+                        // Vẽ khung xung quanh khuôn mặt
                         Imgproc.rectangle(frame, new Point(face.x, face.y), new Point(face.x + face.width, face.y + face.height), new Scalar(0, 255, 0), 2);
 
-                        // Lưu khuôn mặt vào file
-                        Mat faceImage = new Mat(frame, face);
-                        String filename = studentDir + "/face_" + faceCount + ".jpg"; // Updated path to include student's ID and name
-                        try {
-                            Imgcodecs.imwrite(filename, faceImage);
-                            System.out.println("Đã lưu khuôn mặt vào: " + filename);
-                            student.setFaceImgPath(filename); // Save the path to the student object
-                        } catch (Exception e) {
-                            System.out.println("Không thể lưu khuôn mặt: " + e.getMessage());
+                        // Kiểm tra xem khuôn mặt có nằm hoàn toàn trong khung allowedArea không
+                        if (allowedArea.contains(new Point(face.x, face.y)) && allowedArea.contains(new Point(face.x + face.width, face.y + face.height))) {
+                            // Lưu khuôn mặt vào file
+                            Mat faceImage = new Mat(frame, face);
+                            String filename = studentDir + "/face_" + faceCount + ".jpg"; // Updated path to include student's ID and name
+                            try {
+                                Imgcodecs.imwrite(filename, faceImage);
+                                System.out.println("Đã lưu khuôn mặt vào: " + filename);
+                                student.setFaceImgPath(filename); // Save the path to the student object
+                            } catch (Exception e) {
+                                System.out.println("Không thể lưu khuôn mặt: " + e.getMessage());
+                            }
+
+                            // Tăng số lượng ảnh đã lưu
+                            faceCount++;
                         }
 
-                        // Tăng số lượng ảnh đã lưu
-                        faceCount++;
-                    }
-
-                    if (faceCount > 30) {
-                        System.out.println("Đã lưu đủ 30 khuôn mặt.");
-                        break;
+                        // Nếu đã lưu đủ 10 tấm ảnh thì dừng lại
+                        if (faceCount > 10) {
+                            System.out.println("Đã lưu đủ 10 khuôn mặt.");
+                            break;
+                        }
                     }
 
                     HighGui.imshow("Face Detection", frame);
-                    if (HighGui.waitKey(1) == 'q') { 
+                    if (HighGui.waitKey(1) == 'q' || faceCount > 10) { 
                         break;
                     }
                 } else {
