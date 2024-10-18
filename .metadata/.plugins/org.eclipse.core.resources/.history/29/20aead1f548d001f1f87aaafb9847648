@@ -1,0 +1,45 @@
+package connect;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class ConnectSQL {
+    private Connection connection;
+
+    // Phương thức để tạo kết nối với database
+    public boolean connect_db() {
+        String url = "jdbc:mysql://localhost:3306/face_id";
+        String username = "root";
+        String password = "";
+
+        try {
+            connection = DriverManager.getConnection(url, username, password);
+            System.out.println("Kết nối database thành công!");
+            return true;
+        } catch (SQLException e) {
+            System.err.println("Kết nối database thất bại!");
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    // Phương thức chèn thông tin sinh viên vào cơ sở dữ liệu
+    public void insertStudent(int id, String name, String studentClass) {
+        String sql = "INSERT INTO students (id, name, class) VALUES (?, ?, ?)";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            pstmt.setString(2, name);
+            pstmt.setString(3, studentClass);
+            pstmt.executeUpdate();
+            System.out.println("Thông tin sinh viên đã được lưu vào cơ sở dữ liệu.");
+        } catch (SQLException e) {
+            System.out.println("Lỗi khi lưu thông tin sinh viên: " + e.getMessage());
+        }
+    }
+}

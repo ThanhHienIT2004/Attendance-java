@@ -1,0 +1,61 @@
+package connect;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class ConnectSQL {
+	private Connection connection;
+
+	// Phương thức để tạo kết nối với database
+	public boolean connect_db() {
+		String url = "jdbc:mysql://localhost:3306/face_id";
+		String username = "root";
+		String password = "";
+
+		try {
+			connection = DriverManager.getConnection(url, username, password);
+			System.out.println("Kết nối database thành công!");
+			return true;
+		} catch (SQLException e) {
+			System.err.println("Kết nối database thất bại!");
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public Connection getConnection() {
+		return connection;
+	}
+
+	// Phương thức chèn thông tin sinh viên vào cơ sở dữ liệu
+	public void insertStudent(int id, String name, String studentClass, String faceImgPath) {
+		String sql = "INSERT INTO students (id, name, class, face_img_path) VALUES (?, ?, ?, ?)";
+		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+			pstmt.setInt(1, id);
+			pstmt.setString(2, name);
+			pstmt.setString(3, studentClass);
+			pstmt.setString(4, faceImgPath); // Thêm đường dẫn ảnh vào cơ sở dữ liệu
+			pstmt.executeUpdate();
+			System.out.println("Thông tin sinh viên đã được lưu vào cơ sở dữ liệu.");
+		} catch (SQLException e) {
+			System.out.println("Lỗi khi lưu thông tin sinh viên: " + e.getMessage());
+		}
+	}
+	public int getNextStudentId() {
+	    int nextId = 1; // Giá trị mặc định
+	    String query = "SELECT MAX(id) AS max_id FROM students"; // Giả sử bạn có bảng students
+
+	    try (Statement stmt = connection.createStatement();
+	         ResultSet rs = stmt.executeQuery(query)) {
+	        if (rs.next()) {
+	            nextId = rs.getInt("max_id") + 1; // Tăng ID lên 1
+	        }
+	    } catch (SQLException e) {
+	        System.err.println("Có lỗi xảy ra khi lấy ID tiếp theo: " + e.getMessage());
+	    }
+	    return nextId; // Trả về ID tiếp theo
+	}
+
+}
