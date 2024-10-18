@@ -1,143 +1,130 @@
 package controller;
 
-import java.io.File;
-
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfRect;
-import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Point;
 import org.opencv.highgui.HighGui;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
-import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.videoio.VideoCapture;
 
 import model.Student;
 
+import org.opencv.objdetect.CascadeClassifier;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.core.MatOfRect;
+import org.opencv.imgcodecs.Imgcodecs;
+
+import java.io.File;
+
 public class FaceDetect {
-	private VideoCapture camera;
-	private CascadeClassifier faceDetector;
-	private String datasetDir = "dataset";
-	private int faceCount = 1;
 
-	// Constructor
-	public FaceDetect() {
-		// Nạp thư viện OpenCV
-		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+    private VideoCapture camera;
+    private CascadeClassifier faceDetector;
+    private String datasetDir = "dataset";
+    private int faceCount = 1;
 
-		// Khởi tạo camera
-		this.camera = new VideoCapture(0);
-		if (!camera.isOpened()) {
-			System.out.println("Không thể mở camera.");
-			return;
-		}
+    // Đổi tên hàm khởi tạo cho khớp với tên lớp
+    public FaceDetect() {
+        // Nạp thư viện OpenCV
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
-		// Khởi tạo bộ phát hiện khuôn mặt
-		this.faceDetector = new CascadeClassifier("open_cv/haarcascade_frontalface_default.xml");
+        // Khởi tạo camera
+        this.camera = new VideoCapture(0);
+        if (!camera.isOpened()) {
+            System.out.println("Không thể mở camera.");
+            return;
+        }
 
-		// Tạo thư mục dataset nếu chưa có
-		File directory = new File(datasetDir);
-		if (!directory.exists()) {
-			directory.mkdir();
-		}
-	}
+        // Khởi tạo bộ phát hiện khuôn mặt
+        this.faceDetector = new CascadeClassifier("open_cv/haarcascade_frontalface_default.xml");
 
-	// Phương thức tạo thư mục cho sinh viên
-	private void createStudentDirectory(int studentId, String studentName) {
-		String studentDir = datasetDir + "/" + studentId + "_" + studentName; // Use id_name format
-		File directory = new File(studentDir);
-		if (!directory.exists()) {
-			directory.mkdir();
-		}
-	}
+        // Tạo thư mục dataset nếu chưa có
+        File directory = new File(datasetDir);
+        if (!directory.exists()) {
+            directory.mkdir();
+        }
+    }
 
-	// Phương thức phát hiện và lưu khuôn mặt
-	public void detectFace(Student student) { // Accept Student object
-		Mat frame = new Mat();
+    // Phương thức tạo thư mục cho sinh viên
+    private void createStudentDirectory(int studentId, String studentName) {
+        String studentDir = datasetDir + "/" + studentId + "_" + studentName; // Use id_name format
+        File directory = new File(studentDir);
+        if (!directory.exists()) {
+            directory.mkdir();
+        }
+    }
 
-		// Tạo thư mục cho sinh viên
-		createStudentDirectory(student.getId(), student.getName());
+    // Phương thức phát hiện và lưu khuôn mặt
+    public void detectFace(Student student) { // Accept Student object
+        Mat frame = new Mat();
+        
+        // Create a directory for the student using their ID and name
+        createStudentDirectory(student.getId(), student.getName()); // Call the new method
 
-		String studentDir = datasetDir + "/" + student.getId() + "_" + student.getName();
+        String studentDir = datasetDir + "/" + student.getId() + "_" + student.getName(); // Define studentDir here
 
-		// Khung giới hạn khuôn mặt
-		Rect allowedArea = new Rect(200, 200, 250, 250); // Tạo khung hình có kích thước và vị trí xác định
+        // Khung giới hạn khuôn mặt
+        Rect allowedArea = new Rect(200, 200, 250, 250); // Tạo khung hình có kích thước và vị trí xác định
 
-		try {
-			while (true) {
-				if (camera.read(frame)) {
-					Core.flip(frame, frame, 1);
+        try {
+            while (true) {
+                if (camera.read(frame)) {
+                    Core.flip(frame, frame, 1);
 
-					// Chuyển đổi ảnh sang màu xám
-					Mat grayFrame = new Mat();
-					Imgproc.cvtColor(frame, grayFrame, Imgproc.COLOR_BGR2GRAY);
+                    // Chuyển đổi ảnh sang màu xám
+                    Mat grayFrame = new Mat();
+                    Imgproc.cvtColor(frame, grayFrame, Imgproc.COLOR_BGR2GRAY);
 
-					MatOfRect facesArray = new MatOfRect();
-					faceDetector.detectMultiScale(grayFrame, facesArray);
+                    MatOfRect facesArray = new MatOfRect();
+                    faceDetector.detectMultiScale(grayFrame, facesArray);
 
-					// Vẽ khung giới hạn trên cửa sổ
-					Imgproc.rectangle(frame, allowedArea.tl(), allowedArea.br(), new Scalar(255, 0, 0), 2);
+                    // Vẽ khung giới hạn trên cửa sổ
+                    Imgproc.rectangle(frame, allowedArea.tl(), allowedArea.br(), new Scalar(255, 0, 0), 2);
 
-					Rect[] faces = facesArray.toArray();
-					for (Rect face : faces) {
-						// Vẽ khung xung quanh khuôn mặt
-						Imgproc.rectangle(frame, new Point(face.x, face.y),
-								new Point(face.x + face.width, face.y + face.height), new Scalar(0, 255, 0), 2);
+                    Rect[] faces = facesArray.toArray();
+                    for (Rect face : faces) {
+                        // Vẽ khung xung quanh khuôn mặt
+                        Imgproc.rectangle(frame, new Point(face.x, face.y), new Point(face.x + face.width, face.y + face.height), new Scalar(0, 255, 0), 2);
 
-						// Kiểm tra xem khuôn mặt có nằm hoàn toàn trong khung allowedArea không
-						if (allowedArea.contains(new Point(face.x, face.y))
-								&& allowedArea.contains(new Point(face.x + face.width, face.y + face.height))) {
-							// Lưu khuôn mặt vào file
-							Mat faceImage = new Mat(frame, face);
-							String filename = studentDir + "/face_" + faceCount + ".jpg";
-							try {
-								Imgcodecs.imwrite(filename, faceImage);
-								System.out.println("Đã lưu khuôn mặt vào: " + filename);
-								student.setFaceImgPath(filename); // Lưu đường dẫn ảnh vào đối tượng student
+                        // Kiểm tra xem khuôn mặt có nằm hoàn toàn trong khung allowedArea không
+                        if (allowedArea.contains(new Point(face.x, face.y)) && allowedArea.contains(new Point(face.x + face.width, face.y + face.height))) {
+                            // Lưu khuôn mặt vào file
+                            Mat faceImage = new Mat(frame, face);
+                            String filename = studentDir + "/face_" + faceCount + ".jpg"; // Updated path to include student's ID and name
+                            try {
+                                Imgcodecs.imwrite(filename, faceImage);
+                                System.out.println("Đã lưu khuôn mặt vào: " + filename);
+                                student.setFaceImgPath(filename); // Save the path to the student object
+                            } catch (Exception e) {
+                                System.out.println("Không thể lưu khuôn mặt: " + e.getMessage());
+                            }
 
-								// Hiển thị ảnh đã chụp lên cửa sổ camera
-								Imgproc.putText(frame, "Captured: " + filename, new Point(10, 30),
-										Imgproc.FONT_HERSHEY_SIMPLEX, 1, new Scalar(0, 255, 0), 2);
-							} catch (Exception e) {
-								System.out.println("Không thể lưu khuôn mặt: " + e.getMessage());
-							}
+                            // Tăng số lượng ảnh đã lưu
+                            faceCount++;
+                        }
 
-							// Tăng số lượng ảnh đã lưu
-							faceCount++;
-						}
+                        // Nếu đã lưu đủ 10 tấm ảnh thì dừng lại
+                        if (faceCount > 10) {
+                            System.out.println("Đã lưu đủ 10 khuôn mặt.");
+                            break;
+                        }
+                    }
 
-						// Nếu đã lưu đủ 15 tấm ảnh thì dừng lại
-						if (faceCount > 15) {
-							System.out.println("Đã lưu đủ 10 khuôn mặt.");
-							break;
-						}
-					}
-
-					// Hiển thị khung hình camera sau khi chụp ảnh
-					HighGui.imshow("Face Detection", frame);
-					if (HighGui.waitKey(1) == 'q' || faceCount > 10) {
-						break;
-					}
-
-					// Dừng 0.3 giây sau mỗi lần chụp
-					try {
-						Thread.sleep(300); // 300 milliseconds
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				} else {
-					System.out.println("Không thể đọc khung hình.");
-					break;
-				}
-			}
-		} catch (Exception e) {
-			System.out.println("Có lỗi xảy ra trong quá trình phát hiện khuôn mặt: " + e.getMessage());
-		} finally {
-			camera.release();
-			HighGui.destroyAllWindows();
-		}
-	}
-
+                    HighGui.imshow("Face Detection", frame);
+                    if (HighGui.waitKey(1) == 'q' || faceCount > 10) { 
+                        break;
+                    }
+                } else {
+                    System.out.println("Không thể đọc khung hình.");
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Có lỗi xảy ra trong quá trình phát hiện khuôn mặt: " + e.getMessage());
+        } finally {
+            camera.release();
+            HighGui.destroyAllWindows();
+        }
+    }
 }

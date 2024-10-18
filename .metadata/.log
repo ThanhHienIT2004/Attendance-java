@@ -10565,3 +10565,8 @@ Caused by: java.io.IOException: CreateProcess error=2, The system cannot find th
 	at java.base/java.lang.ProcessImpl.start(ProcessImpl.java:159)
 	at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1126)
 	... 8 more
+
+!ENTRY org.eclipse.core.resources 2 2 2024-10-18 23:42:06.247
+!MESSAGE Save operation warnings.
+!SUBENTRY 1 org.eclipse.core.resources 2 234 2024-10-18 23:42:06.247
+!MESSAGE The project description file (.project) for 'Btvn' was missing.  This file contains important information about the project.  A new project description file has been created, but some information about the project may have been lost.

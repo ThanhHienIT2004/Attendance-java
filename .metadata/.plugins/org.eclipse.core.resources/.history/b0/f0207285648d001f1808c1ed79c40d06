@@ -1,47 +1,90 @@
 package model;
 
-public class Student {
-	private int id; // id sinh viên
-	private String name; // tên sinh viên
-	private String studentClass; // lớp sinh viên
-	private String faceImgPath; // đường dẫn ảnh khuôn mặt
+import java.util.Scanner;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-	public Student(int id, String name, String studentClass, String faceImgPath) {
-		this.id = id;
-		this.name = name;
-		this.studentClass = studentClass;
-		this.faceImgPath = faceImgPath;
-	}
+public class Student { // Changed class name to follow Java naming conventions
+    private int id;
+    private String name;
+    private String studentClass;
+    private String faceImgPath;
 
-	// Getter và Setter
-	public int getId() {
-		return id;
-	}
+    // Hàm khởi tạo có tham số
+    public Student(int id, String name, String studentClass, String faceImgPath) {
+        this.id = id;
+        this.name = name;
+        this.studentClass = studentClass;
+        this.faceImgPath = faceImgPath;
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    // Hàm khởi tạo không tham số
+    public Student() { 
+    }
 
-	public String getName() {
-		return name;
-	}
+    // Getters và Setters
+    public int getId() {
+        return id;
+    }
 
-	public String getStudentClass() {
-		return studentClass;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public String getFaceImgPath() {
-		return faceImgPath;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setFaceImgPath(String faceImgPath) {
-		this.faceImgPath = faceImgPath;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void displayStudentInfo() {
-		System.out.println("ID: " + id);
-		System.out.println("Tên: " + name);
-		System.out.println("Lớp: " + studentClass);
-		System.out.println("Đường dẫn ảnh: " + faceImgPath);
-	}
+    public String getStudentClass() { // Cập nhật getter
+        return studentClass;
+    }
+
+    public void setStudentClass(String studentClass) { // Cập nhật setter
+        this.studentClass = studentClass;
+    }
+
+    public String getFaceImgPath() { // Updated to return the face image path
+        return faceImgPath;
+    }
+
+    public void setFaceImgPath(String faceImgPath) {
+        this.faceImgPath = faceImgPath;
+    }
+    
+    // Phương thức hiển thị thông tin học sinh
+    public void displayStudentInfo() {
+        System.out.println("Thông tin học sinh:");
+        System.out.println("Mã số học sinh: " + getId()); 
+        System.out.println("Tên: " + getName());
+        System.out.println("Lớp: " + getStudentClass());
+    }
+
+    // Phương thức nhập thông tin sinh viên
+    public Student enterStudentInfo() {
+        Scanner scanner = new Scanner(System.in);
+        Student student = new Student();
+
+        System.out.print("Nhập mã số học sinh: ");
+        int studentId = scanner.nextInt();
+        student.setId(studentId);
+        scanner.nextLine(); // Đọc dòng còn lại để tránh vấn đề với nextLine()
+
+        System.out.print("Nhập tên học sinh: ");
+        String name = scanner.nextLine();
+        student.setName(name);
+
+        System.out.print("Nhập lớp học sinh: ");
+        String studentClass = scanner.nextLine();
+        student.setStudentClass(studentClass);
+
+        // Sau khi nhập xong, trả về đối tượng Student
+        return student;
+    }
+    
 }
